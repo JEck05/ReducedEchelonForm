@@ -1,0 +1,6 @@
+[package]
+name = "reduced_row_echelon_form"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
