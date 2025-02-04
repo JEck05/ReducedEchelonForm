@@ -5,5 +5,9 @@ edition = "2021"
 description = "`reduced_row_echelon_form` is an api that lets you constuct a Matrix and convert it to RREF"
 license = "MIT"
 repository = "https://github.com/JEck05/ReducedEchelonForm"
-
+exclude = [
+    "src/main.rs",
+]
 [dependencies]
+
+
