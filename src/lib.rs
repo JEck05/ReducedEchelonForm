@@ -56,8 +56,6 @@ impl Matrix {
 }
 
 impl Matrix {
-
-
     /// consumes the matrix and returns its Reduced Row Echelon Form(or as close as it can)
     ///
     /// ### Algorithm
