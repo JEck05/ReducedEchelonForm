@@ -1,5 +1,5 @@
 [package]
-name = "reduced_row_echelon_form"
+name = "reduced_row_echelon_form_jeck"
 version = "0.1.0"
 edition = "2021"
 description = "`reduced_row_echelon_form` is an api that lets you constuct a Matrix and convert it to RREF"

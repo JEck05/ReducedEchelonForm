@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "reduced_row_echelon_form"
+name = "reduced_row_echelon_form_jeck"
 version = "0.1.0"

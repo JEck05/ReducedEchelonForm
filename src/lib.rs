@@ -1,18 +1,38 @@
+use std::fmt::{Display, Formatter};
+
 /// Matrix Object
 #[derive(Debug)]
 pub struct Matrix{
     pub matrix: Vec<Vec<f64>>,
 }
-
+impl Display for Matrix{
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+       for row in &self.matrix {
+            for (i, item) in row.iter().enumerate() {
+                if i > 0{
+                    write!(f, " ")?; // Add space between elements
+                }else {
+                    write!(f, "| ")?;
+                }
+                write!(f, "{}", item)?;
+                if i == row.len() - 1 {
+                    write!(f, " |")?;
+                }
+            }
+            writeln!(f)?; // New line after each row
+        }
+        Ok(())
+    }
+}
 impl Matrix {
     /// Allocates a new `Matrix<f64>`, and moves `initial_matrix`'s items into it
     ///
-    /// `intial_matrix` is in the form of Vec<Vec<f64>>, where the inner `Vec<f64>` is
+    /// `initial_matrix` is in the form of Vec<Vec<f64>>, where the inner `Vec<f64>` is
     /// each row of a matrix, and the length of `Vec<f64>` is how many columns in the `Matrix`.
     ///
     /// ### Examples
     /// ```rust
-    /// use reduced_row_echelon_form::Matrix;
+    /// use reduced_row_echelon_form_jeck::Matrix;
     /// let matrix = vec![
     ///     vec![1.0, 3.0],
     ///     vec![2.0, 1.5],
