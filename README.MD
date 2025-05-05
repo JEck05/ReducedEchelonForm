@@ -1,4 +1,4 @@
-## reduced_row_echelon_form_jeck
+## reduced_row_echelon_form_jeck`
 
 This crate is a published version of my submission to an extra credit assignment for `UMD MATH3326 Vectors and Matrices`.
 

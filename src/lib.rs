@@ -53,6 +53,13 @@ impl Matrix {
             panic!("Invalid row scalar for this value: {pivot_point}");
         }
     }
+    fn get_identity_matrix(size: usize) -> Vec<Vec<f64>>{
+        let mut identity_matrix = vec![vec![0.0; size]; size];
+        for i in 0..size{
+            identity_matrix[i][i] = 1.0;
+        }
+        identity_matrix
+    }
 }
 
 impl Matrix {
@@ -65,6 +72,10 @@ impl Matrix {
     /// Step 4. Move the target row to the "top" \
     ///
     pub fn to_reduced_row_echelon_form(mut self) -> Self{
+        self.calc_reduced_row_echelon_form();
+        self
+    }
+    pub fn calc_reduced_row_echelon_form(&mut self) -> &mut Self {
         let mut current_col = 0;
         for current_row in 0..self.matrix.len(){
             let pivot_point = self.get_leftmost_nonzero_in_a_col(current_col);
@@ -78,6 +89,31 @@ impl Matrix {
             if pivot_point != current_row{ self.swap_rows(pivot_point, current_row); }
 
             current_col += 1;
+        }
+        self
+    }
+
+    pub fn calc_inverse(&self) -> Matrix {
+        let mut inverse_matrix = Matrix::from(self.matrix.clone());
+        inverse_matrix.create_invertible_matrix_form().calc_reduced_row_echelon_form();
+        let size = inverse_matrix.matrix.len();
+        // remove the identity matrix from the matrix in the form [ In A^-1]
+        for row in &mut inverse_matrix.matrix{
+            row.drain(0..size);
+        }
+        inverse_matrix
+    }
+
+    fn create_invertible_matrix_form(&mut self) -> &mut Self{
+        let identity_matrix_size = {
+            if self.matrix[0].len() == self.matrix.len(){
+                self.matrix.len()
+            }else { panic!("Non Square matrix") }
+        };
+        let mut identity_matrix = Self::get_identity_matrix(identity_matrix_size);
+
+        for (i, k) in self.matrix.iter_mut().enumerate(){
+            k.append(&mut identity_matrix[i]);
         }
         self
     }
@@ -231,7 +267,6 @@ mod test{
     #[test]
     fn calculate_row_scalar(){
         assert_eq!(Matrix::calc_inverse_pivot_point(5.0), 1.0/5.0);
-
     }
     #[test]
     #[should_panic]
@@ -313,4 +348,80 @@ mod test{
         ];
         assert_eq!(matrix.to_reduced_row_echelon_form().matrix, expected);
    }
+    /*
+    This is a test to make sure that the get_identity_matrix function
+    creates them correctly given a size value
+    */
+    #[test]
+    fn identity_matrix(){
+        let identity_matrix = vec![
+            vec![1.0, 0.0, 0.0],
+            vec![0.0, 1.0, 0.0],
+            vec![0.0, 0.0, 1.0],
+        ];
+        let test_identity_matrix = Matrix::get_identity_matrix(3);
+
+        assert_eq!(identity_matrix, test_identity_matrix);
+
+
+    }
+    /*
+    This checks to make sure that the function that turns a matrix into
+    the form [ A In] works correctly
+    */
+    #[test]
+    fn invertible_form_matrix(){
+        let starting_matrix = vec![
+            vec![2.0, 3.0, 5.0],
+            vec![1.0, 4.0, 2.0],
+            vec![1.0, 6.0,3.0],
+        ];
+
+        let invertible_form_matrix = vec![
+            vec![2.0, 3.0, 5.0, 1.0, 0.0, 0.0],
+            vec![1.0, 4.0, 2.0, 0.0, 1.0, 0.0],
+            vec![1.0, 6.0, 3.0, 0.0, 0.0, 1.0]
+        ];
+        assert_eq!(invertible_form_matrix, Matrix::from(starting_matrix).create_invertible_matrix_form().matrix)
+    }
+    /*
+    This makes sure that it calculates the inverse correctly
+    */
+    #[test]
+    fn to_invertible_matrix(){
+        let starting_matrix = Matrix::from( vec![
+            vec![2.0, 0.0, -1.0],
+            vec![5.0, 1.0, 0.0],
+            vec![0.0, 1.0, 3.0],
+        ]);
+        let expected_matrix = vec![
+            vec![3.0, -1.0, 1.0],
+            vec![-15.0, 6.0, -5.0],
+            vec![5.0, -2.0, 2.0],
+        ];
+
+        assert_eq!(starting_matrix.calc_inverse().matrix, expected_matrix);
+    }
+    /*
+    This makes sure that when calculating the matrix it */
+    #[test]
+    fn retain_original_matrix(){
+         let starting_matrix = Matrix::from(vec![
+            vec![2.0, 0.0, -1.0],
+            vec![5.0, 1.0, 0.0],
+            vec![0.0, 1.0, 3.0],
+        ]);
+        let starting_matrix_copy = starting_matrix.matrix.clone();
+
+        assert_eq!(starting_matrix_copy, starting_matrix.matrix);
+    }
+    #[test]
+    fn singular_matrix(){
+        let starting_matrix = Matrix::from(vec![
+           vec![1.0,2.0],
+           vec![2.0, 4.0]
+        ]);
+        let inverse = starting_matrix.calc_inverse();
+        print!("{:?}", inverse.matrix);
+    }
 }
